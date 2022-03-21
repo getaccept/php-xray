@@ -4,6 +4,7 @@ namespace Pkerrigan\Xray;
 
 use JsonSerializable;
 use Pkerrigan\Xray\Submission\SegmentSubmitter;
+use Pkerrigan\Xray\Plugins\Plugin;
 
 /**
  *
@@ -75,6 +76,15 @@ class Segment implements JsonSerializable
      * @var int
      */
     private $lastOpenSegment = 0;
+    /**
+     * @var null|string
+     */
+    private $origin = null;
+
+    /**
+     * @var null | string[]
+     */
+    private $aws = [];
 
     public function __construct()
     {
@@ -274,6 +284,48 @@ class Segment implements JsonSerializable
     }
 
     /**
+     * @param Plugin $plugin
+     * @return static
+     */
+    public function addPluginData(Plugin $plugin)
+    {
+        $this->aws = array_merge_recursive($this->aws, $plugin->getData());
+
+        if (isset($this->aws['origin'])) {
+            $this->setOrigin($this->aws['origin']);
+            unset($this->aws['origin']);
+        }
+
+        if (!empty($plugin->getName())) {
+            $this->setName($plugin->getName());
+        }
+
+        if ($plugin->isIndependent()) {
+            $this->setIndependent(true);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOrigin(): string
+    {
+        return $this->origin;
+    }
+
+    /**
+     * @param string|null $origin
+     * @return Segment
+     */
+    public function setOrigin(string &$origin)
+    {
+        $this->origin = $origin;
+        return $this;
+    }
+
+    /**
      * @return Segment
      */
     public function getCurrentSegment(): Segment
@@ -290,10 +342,11 @@ class Segment implements JsonSerializable
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return array_filter([
+            'aws' => $this->aws,
+            'origin' => $this->origin,
             'id' => $this->id,
             'parent_id' => $this->parentId,
             'trace_id' => $this->traceId,
@@ -306,14 +359,6 @@ class Segment implements JsonSerializable
             'error' => $this->error,
             'annotations' => empty($this->annotations) ? null : $this->annotations,
             'metadata' => empty($this->metadata) ? null : $this->metadata,
-            'aws' => $this->serialiseAwsData(),
-        ]);
-    }
-
-    protected function serialiseAwsData(): array
-    {
-        return array_filter([
-            'account_id' => $this->awsAccountId,
         ]);
     }
 }
