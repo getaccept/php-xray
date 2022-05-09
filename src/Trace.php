@@ -37,6 +37,16 @@ class Trace extends Segment
     }
 
     /**
+     * @return void
+     */
+    public static function destroy(): void
+    {
+        if (!is_null(self::$instance)) {
+            self::$instance = NULL;
+        }
+    }
+
+    /**
      * @param string $traceHeader
      * @return static
      */
@@ -128,7 +138,6 @@ class Trace extends Segment
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $data = parent::jsonSerialize();

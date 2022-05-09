@@ -19,6 +19,15 @@ class TraceTest extends TestCase
         $this->assertEquals(spl_object_hash($instance1), spl_object_hash($instance2));
     }
 
+    public function testDestroySingleton(): void
+    {
+        $instance1 = Trace::getInstance()->setName('Test destroy');
+        Trace::destroy();
+        $instance2 = Trace::getInstance();
+
+        $this->assertNotEquals(spl_object_hash($instance1), spl_object_hash($instance2));
+    }
+
     public function testSerialisesCorrectly(): void
     {
         $trace = new Trace();
@@ -53,7 +62,7 @@ class TraceTest extends TestCase
         $trace = new Trace();
         $trace->begin();
 
-        $this->assertRegExp('@^1\-[a-f0-9]{8}\-[a-f0-9]{24}$@', $trace->getTraceId());
+        $this->assertMatchesRegularExpression('@^1\-[a-f0-9]{8}\-[a-f0-9]{24}$@', $trace->getTraceId());
     }
 
     public function testGivenNullHeaderDoesNotSetId(): void

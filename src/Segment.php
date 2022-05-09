@@ -345,7 +345,7 @@ class Segment implements JsonSerializable
     public function jsonSerialize()
     {
         return array_filter([
-            'aws' => $this->aws,
+            'aws' => $this->serialiseAwsData(),
             'origin' => $this->origin,
             'id' => $this->id,
             'parent_id' => $this->parentId,
@@ -360,5 +360,12 @@ class Segment implements JsonSerializable
             'annotations' => empty($this->annotations) ? null : $this->annotations,
             'metadata' => empty($this->metadata) ? null : $this->metadata,
         ]);
+    }
+
+    protected function serialiseAwsData(): array
+    {
+        return array_filter(array_merge($this->aws, [
+            'account_id' => $this->awsAccountId,
+        ]));
     }
 }
