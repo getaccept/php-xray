@@ -42,6 +42,7 @@ class SecretsManagerSegment extends AwsSegment
     /**
      * @inheritdoc
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $data = parent::jsonSerialize();
