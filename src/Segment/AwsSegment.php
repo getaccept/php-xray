@@ -107,6 +107,7 @@ class AwsSegment extends HttpSegment
     /**
      * @inheritdoc
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $data = parent::jsonSerialize();

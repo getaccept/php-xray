@@ -42,6 +42,7 @@ class DynamoDbSegment extends AwsSegment
     /**
      * @inheritdoc
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $data = parent::jsonSerialize();
